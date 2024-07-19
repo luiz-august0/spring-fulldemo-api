@@ -1,0 +1,144 @@
+app:
+  name: SpringFullDemo-API Local
+  description: "SpringFullDemo API Local"
+  version: "1.0.0"
+  base-path: /api
+
+api:
+  prefix.v1: ${app.base-path}/v1
+  security:
+    token:
+      secret: ${API_TOKEN_SECRET:API123}
+
+spring:
+  config.activate.on-profile: localhost
+  application.name: ${app.name}
+  data.rest.base-path: ${app.base-path}
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: false
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${API_AWS_ACCESS_KEY:AWS_ACCESS_KEY}
+      secret-key: ${API_AWS_SECRET_KEY:AWS_SECRET_KEY}
+    region:
+      static: ${API_AWS_REGION:AWS_REGION}
+    stack:
+      auto: false
+    s3:
+      bucket-name: ${API_AWS_S3_BUCKET_NAME:AWS_S3_BUCKET_NAME}
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1
+    mime-types: text/html,
+      text/xml,
+      text/plain,
+      text/css,
+      text/javascript,
+      application/javascript,
+      application/json,
+      application/xml,
+      application/pdf,
+      image/png,
+      image/jpeg,
+      image/svg+xml
+
+logging:
+  level:
+    root: 'INFO'
+    org.hibernate.type.descriptor.sql.BasicBinder: 'TRACE'
+    org.hibernate.type.descriptor.sql.BasicExtractor: 'OFF'
+    org.springframework.web.servlet.DispatcherServlet: 'DEBUG'
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: 'DEBUG'
+
+---
+
+app:
+  name: SpringFullDemo-API Docker
+  description: "SpringFullDemo API Docker"
+  version: "1.0.0"
+  base-path: /api
+
+api:
+  prefix.v1: ${app.base-path}/v1
+  security:
+    token:
+      secret: ${API_TOKEN_SECRET:API123}
+
+spring:
+  config.activate.on-profile: docker
+  application.name: ${app.name}
+  data.rest.base-path: ${app.base-path}
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: false
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  datasource:
+    url: jdbc:postgresql://${API_PG_URL}/${API_PG_DATABASE}
+    username: ${API_PG_USERNAME}
+    password: ${API_PG_PASSWORD}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${API_AWS_ACCESS_KEY:AWS_ACCESS_KEY}
+      secret-key: ${API_AWS_SECRET_KEY:AWS_SECRET_KEY}
+    region:
+      static: ${API_AWS_REGION:AWS_REGION}
+    stack:
+      auto: false
+    s3:
+      bucket-name: ${API_AWS_S3_BUCKET_NAME:AWS_S3_BUCKET_NAME}
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1
+    mime-types: text/html,
+      text/xml,
+      text/plain,
+      text/css,
+      text/javascript,
+      application/javascript,
+      application/json,
+      application/xml,
+      application/pdf,
+      image/png,
+      image/jpeg,
+      image/svg+xml
+
+---
