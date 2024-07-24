@@ -34,11 +34,11 @@ public class Converter {
         return mapper.map(dto, entityClass);
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<?> convertEntityToDTO(List<Entity> entityList, Class<DTO> dtoClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<DTO> convertEntityToDTO(List<Entity> entityList, Class<DTO> dtoClass) {
         return entityList.stream().map(entity -> convertEntityToDTO(entity, dtoClass)).toList();
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<?> convertDTOToEntity(List<DTO> dtoList, Class<Entity> entityClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<Entity> convertDTOToEntity(List<DTO> dtoList, Class<Entity> entityClass) {
         return dtoList.stream().map(dto -> convertDTOToEntity(dto, entityClass)).toList();
     }
 
