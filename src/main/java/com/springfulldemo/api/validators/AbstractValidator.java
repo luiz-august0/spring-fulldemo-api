@@ -10,7 +10,7 @@ import com.springfulldemo.api.validators.classes.RequiredField;
 
 import java.util.List;
 
-public abstract class AbstractValidator {
+public abstract class AbstractValidator<Object> {
     private List<RequiredField> requiredFields;
 
     private List<CharacterLengthField> characterLengthFields;
@@ -20,10 +20,10 @@ public abstract class AbstractValidator {
     public void validate(Object object) {
         validateRequiredFields(object);
         validateCharacterLengthFields(object);
-    };
+    }
 
     public void validateRequiredFields(Object object) {
-        if (Utils.isNotEmpty(requiredFields)){
+        if (Utils.isNotEmpty(requiredFields)) {
             requiredFields.forEach(requiredField -> {
                 requiredField.getField().setAccessible(true);
 
@@ -88,10 +88,14 @@ public abstract class AbstractValidator {
 
     public void addListOfRequiredFields(List<RequiredField> fields) {
         requiredFields = fields;
-    };
+    }
 
-    public void addListOfCharacterLengthFields(List<CharacterLengthField> fields) { characterLengthFields = fields; };
+    public void addListOfCharacterLengthFields(List<CharacterLengthField> fields) {
+        characterLengthFields = fields;
+    }
 
-    public void addListOfGreaterThanOrEqualZeroFields(List<GreaterThanOrEqualZeroField> fields) { greaterThanOrEqualZeroFields = fields; };
+    public void addListOfGreaterThanOrEqualZeroFields(List<GreaterThanOrEqualZeroField> fields) {
+        greaterThanOrEqualZeroFields = fields;
+    }
 
 }

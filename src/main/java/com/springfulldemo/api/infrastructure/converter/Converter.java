@@ -17,7 +17,7 @@ import java.util.*;
 public class Converter {
     private static final ModelMapper mapper = new ModelMapper();
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO convertEntityToDTO(Entity entity, Class<DTO> dtoClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> DTO convertEntityToDTO(Entity entity, Class<DTO> dtoClass) {
         try {
             DTO dtoObj = dtoClass.getDeclaredConstructor().newInstance();
             List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(Converter::doFilterAnnotations).toList();
@@ -30,19 +30,19 @@ public class Converter {
         }
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> Entity convertDTOToEntity(DTO dto, Class<Entity> entityClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> Entity convertDTOToEntity(DTO dto, Class<Entity> entityClass) {
         return mapper.map(dto, entityClass);
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> List<?> convertListEntityToDTO(List<Entity> entityList, Class<DTO> dtoClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<?> convertEntityToDTO(List<Entity> entityList, Class<DTO> dtoClass) {
         return entityList.stream().map(entity -> convertEntityToDTO(entity, dtoClass)).toList();
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> List<?> convertListDTOToEntity(List<DTO> dtoList, Class<Entity> entityClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> List<?> convertDTOToEntity(List<DTO> dtoList, Class<Entity> entityClass) {
         return dtoList.stream().map(dto -> convertDTOToEntity(dto, entityClass)).toList();
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> Page<DTO> convertPageEntityToDTO(Page<Entity> entityPage, Class<DTO> dtoClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> Page<DTO> convertEntityToDTO(Page<Entity> entityPage, Class<DTO> dtoClass) {
         return new PageImpl<>(
                 entityPage.stream().map(entity -> convertEntityToDTO(entity, dtoClass)).toList(),
                 entityPage.getPageable(),
@@ -50,7 +50,7 @@ public class Converter {
         );
     }
 
-    public static <Entity extends AbstractEntity, DTO extends AbstractDTO> Page<Entity> convertPageDTOToEntity(Page<DTO> dtoPage, Class<Entity> entityClass) {
+    public static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> Page<Entity> convertDTOToEntity(Page<DTO> dtoPage, Class<Entity> entityClass) {
         return new PageImpl<>(
                 dtoPage.stream().map(dto -> convertDTOToEntity(dto, entityClass)).toList(),
                 dtoPage.getPageable(),
@@ -58,7 +58,7 @@ public class Converter {
         );
     }
 
-    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO mapperEntityFieldsToDTOFields(Entity entity, DTO dtoObj, List<Field> dtoFields) {
+    private static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> DTO mapperEntityFieldsToDTOFields(Entity entity, DTO dtoObj, List<Field> dtoFields) {
         dtoFields.forEach(dtoField -> {
             try {
                 Field entityField = entity.getClass().getDeclaredField(dtoField.getName());
@@ -103,7 +103,7 @@ public class Converter {
         return dtoObj;
     }
 
-    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO getDTOValueFromDTOField(Entity entity, Class<DTO> dtoClass, Field dtoField) {
+    private static <Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>> DTO getDTOValueFromDTOField(Entity entity, Class<DTO> dtoClass, Field dtoField) {
         try {
             String[] DTOFields;
             String[] DTOFieldsToIgnore;

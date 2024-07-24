@@ -10,7 +10,7 @@ import com.springfulldemo.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserValidator extends AbstractValidator {
+public class UserValidator extends AbstractValidator<User> {
     private final UserRepository userRepository;
 
     public UserValidator(UserRepository userRepository) {
@@ -29,12 +29,11 @@ public class UserValidator extends AbstractValidator {
     }
 
     @Override
-    public void validate(Object object) {
-        User user = (User) object;
-
-        super.validate(object);
+    public void validate(User user) {
+        super.validate(user);
 
         if (userRepository.existsByLoginAndIdIsNot(user.getLogin(), Utils.nvl(user.getId(), 0)))
             throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
     }
+
 }

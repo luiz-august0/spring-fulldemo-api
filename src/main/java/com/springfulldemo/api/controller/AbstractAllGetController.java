@@ -1,6 +1,7 @@
 package com.springfulldemo.api.controller;
 
 import com.springfulldemo.api.controller.interfaces.IAbstractAllGetController;
+import com.springfulldemo.api.infrastructure.converter.Converter;
 import com.springfulldemo.api.model.dtos.AbstractDTO;
 import com.springfulldemo.api.service.AbstractService;
 import org.springframework.data.domain.Page;
@@ -10,26 +11,31 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractAllGetController<Service extends AbstractService, DTO extends AbstractDTO> implements IAbstractAllGetController<DTO>, Serializable {
+public abstract class AbstractAllGetController<Service extends AbstractService, DTO extends AbstractDTO>
+        implements IAbstractAllGetController<DTO>, Serializable {
     private final Service service;
 
-    AbstractAllGetController(Service service) {
+    private final DTO dto;
+
+    AbstractAllGetController(Service service, DTO dto) {
         this.service = service;
+        this.dto = dto;
     }
 
     public List<DTO> findAll() {
-        return service.findAll();
+        return Converter.convertEntityToDTO(service.findAll(), dto.getClass());
     }
 
     public List<DTO> findAllFiltered(Pageable pageable, Map<String, Object> filters) {
-        return service.findAllFiltered(pageable, filters);
+        return Converter.convertEntityToDTO(service.findAllFiltered(pageable, filters), dto.getClass());
     }
 
     public Page<DTO> findAllFilteredAndPageable(Pageable pageable, Map<String, Object> filters) {
-        return service.findAllFilteredAndPageable(pageable, filters);
+        return Converter.convertEntityToDTO(service.findAllFilteredAndPageable(pageable, filters), dto.getClass());
     }
 
     public DTO findById(Integer id) {
-        return (DTO) service.findDTOAndValidate(id);
+        return (DTO) Converter.convertEntityToDTO(service.findAndValidate(id), dto.getClass());
     }
+
 }

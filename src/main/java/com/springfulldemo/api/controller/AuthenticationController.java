@@ -8,7 +8,6 @@ import com.springfulldemo.api.model.entities.User;
 import com.springfulldemo.api.model.records.AuthenticationRecord;
 import com.springfulldemo.api.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
@@ -20,22 +19,23 @@ public class AuthenticationController implements IAuthenticationController, Seri
     private final AuthenticationService service;
 
     @Override
-    public ResponseEntity<TokenBean> login(AuthenticationRecord authenticationRecord) {
+    public TokenBean login(AuthenticationRecord authenticationRecord) {
         return service.login(authenticationRecord);
     }
 
     @Override
-    public ResponseEntity<TokenBean> refreshToken(TokenBean tokenBeanRequest) {
+    public TokenBean refreshToken(TokenBean tokenBeanRequest) {
         return service.refreshToken(tokenBeanRequest);
     }
 
     @Override
-    public ResponseEntity<UserDTO> updateSessionUser(UserDTO user) {
-        return service.updateSessionUser(Converter.convertDTOToEntity(user, User.class));
+    public UserDTO updateSessionUser(UserDTO user) {
+        return Converter.convertEntityToDTO(service.updateSessionUser(Converter.convertDTOToEntity(user, User.class)), UserDTO.class);
     }
 
     @Override
-    public ResponseEntity<TokenBean> getSession() {
+    public TokenBean getSession() {
         return service.getSession();
     }
+
 }

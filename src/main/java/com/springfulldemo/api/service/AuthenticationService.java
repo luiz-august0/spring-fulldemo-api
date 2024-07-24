@@ -6,7 +6,6 @@ import com.springfulldemo.api.infrastructure.exceptions.enums.EnumGenericsExcept
 import com.springfulldemo.api.infrastructure.exceptions.enums.EnumResourceNotFoundException;
 import com.springfulldemo.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.springfulldemo.api.model.beans.TokenBean;
-import com.springfulldemo.api.model.dtos.UserDTO;
 import com.springfulldemo.api.model.entities.User;
 import com.springfulldemo.api.model.records.AuthenticationRecord;
 import com.springfulldemo.api.repository.UserRepository;
@@ -16,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.Optional;
-
 
 @RequiredArgsConstructor
 @Service
@@ -42,7 +39,7 @@ public class AuthenticationService {
 
     private final UserService userService;
 
-    public ResponseEntity<TokenBean> login(AuthenticationRecord authenticationRecord) {
+    public TokenBean login(AuthenticationRecord authenticationRecord) {
         if (StringUtil.isNullOrEmpty(TenantContext.getCurrentTenant())
                 || TenantContext.getCurrentTenant().equals(TenantContext.DEFAULT_TENANT)) {
             throw new ApplicationGenericsException(EnumGenericsException.LOGIN_WITHOUT_TENANT);
@@ -64,9 +61,7 @@ public class AuthenticationService {
             String accessToken = tokenService.generateToken(user);
             String refreshToken = tokenService.generateRefreshToken(user);
 
-            TokenBean tokenBean = makeTokenBeanFromUser(user, accessToken, refreshToken);
-
-            return ResponseEntity.ok(tokenBean);
+            return makeTokenBeanFromUser(user, accessToken, refreshToken);
         } catch (RuntimeException e) {
             if (e.getClass() == BadCredentialsException.class) {
                 throw new ApplicationGenericsException(EnumUnauthorizedException.WRONG_CREDENTIALS);
@@ -80,7 +75,7 @@ public class AuthenticationService {
         }
     }
 
-    public ResponseEntity<TokenBean> refreshToken(TokenBean tokenBeanRequest) {
+    public TokenBean refreshToken(TokenBean tokenBeanRequest) {
         User user;
         String[] subject = new String(
                 Base64.getDecoder().decode(tokenService.validateToken(tokenBeanRequest.getRefreshToken()).getBytes())
@@ -102,23 +97,19 @@ public class AuthenticationService {
         String accessToken = tokenService.generateToken(user);
         String newRefreshToken = tokenService.generateRefreshToken(user);
 
-        TokenBean tokenBean = makeTokenBeanFromUser(user, accessToken, newRefreshToken);
-
-        return ResponseEntity.ok(tokenBean);
+        return makeTokenBeanFromUser(user, accessToken, newRefreshToken);
     }
 
-    public ResponseEntity<TokenBean> getSession() {
+    public TokenBean getSession() {
         User user = userService.findAndValidate(userService.getUserByContext().getId());
 
         if (!user.getActive()) throw new ApplicationGenericsException(EnumUnauthorizedException.USER_INACTIVE);
 
-        TokenBean tokenBean = makeTokenBeanFromUser(user, TokenUtil.getTokenFromRequest(request), tokenService.generateRefreshToken(user));
-
-        return ResponseEntity.ok(tokenBean);
+        return makeTokenBeanFromUser(user, TokenUtil.getTokenFromRequest(request), tokenService.generateRefreshToken(user));
     }
 
     @Transactional
-    public ResponseEntity<UserDTO> updateSessionUser(User user) {
+    public User updateSessionUser(User user) {
         return userService.updateContextUser(user);
     }
 
@@ -134,4 +125,5 @@ public class AuthenticationService {
 
         return tokenBean;
     }
+
 }

@@ -7,7 +7,6 @@ import com.springfulldemo.api.model.entities.User;
 import com.springfulldemo.api.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,23 +18,23 @@ public class UserController extends AbstractAllController<UserService, UserDTO> 
     private final UserService userService;
 
     UserController(UserService userService) {
-        super(userService);
+        super(userService, new UserDTO());
         this.userService = userService;
     }
 
     @Override
-    public ResponseEntity<UserDTO> insert(UserDTO user) {
-        return userService.insert(Converter.convertDTOToEntity(user, User.class));
+    public UserDTO insert(UserDTO user) {
+        return Converter.convertEntityToDTO(userService.insert(Converter.convertDTOToEntity(user, User.class)), UserDTO.class);
     }
 
     @Override
-    public ResponseEntity<UserDTO> update(Integer id, UserDTO user) {
-        return userService.update(id, Converter.convertDTOToEntity(user, User.class));
+    public UserDTO update(Integer id, UserDTO user) {
+        return Converter.convertEntityToDTO(userService.update(id, Converter.convertDTOToEntity(user, User.class)), UserDTO.class);
     }
 
     @Override
-    public ResponseEntity<UserDTO> activateInactivate(Integer id, Boolean active) {
-        return userService.activateInactivate(id, active);
+    public UserDTO activateInactivate(Integer id, Boolean active) {
+        return Converter.convertEntityToDTO(userService.activateInactivate(id, active), UserDTO.class);
     }
 
     @Override

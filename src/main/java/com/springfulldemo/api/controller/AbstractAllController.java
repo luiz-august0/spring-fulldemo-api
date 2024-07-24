@@ -4,31 +4,31 @@ import com.springfulldemo.api.controller.interfaces.IAbstractAllController;
 import com.springfulldemo.api.infrastructure.converter.Converter;
 import com.springfulldemo.api.model.dtos.AbstractDTO;
 import com.springfulldemo.api.service.AbstractService;
-import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
 
-public abstract class AbstractAllController
-        <Service extends AbstractService, DTO extends AbstractDTO>
-        extends AbstractAllGetController
-        implements IAbstractAllController<DTO>, Serializable
-{
+public abstract class AbstractAllController<Service extends AbstractService, DTO extends AbstractDTO>
+        extends AbstractAllGetController implements IAbstractAllController<DTO>, Serializable {
     private final Service service;
 
-    AbstractAllController(Service service) {
-        super(service);
+    private final DTO dto;
+
+    AbstractAllController(Service service, DTO dto) {
+        super(service, dto);
         this.service = service;
+        this.dto = dto;
     }
 
-    public ResponseEntity<DTO> insert(DTO dto) {
-        return service.insert(Converter.convertDTOToEntity(dto, service.entity.getClass()));
+    public DTO insert(DTO dto) {
+        return (DTO) Converter.convertEntityToDTO(service.insert(Converter.convertDTOToEntity(dto, service.entity.getClass())), dto.getClass());
     }
 
-    public ResponseEntity<DTO> activateInactivate(Integer id, Boolean active) {
-        return service.activateInactivate(id, active);
+    public DTO activateInactivate(Integer id, Boolean active) {
+        return (DTO) Converter.convertEntityToDTO(service.activateInactivate(id, active), dto.getClass());
     }
 
-    public ResponseEntity<DTO> update(Integer id, DTO dto) {
-        return service.update(id, Converter.convertDTOToEntity(dto, service.entity.getClass()));
+    public DTO update(Integer id, DTO dto) {
+        return (DTO) Converter.convertEntityToDTO(service.update(id, Converter.convertDTOToEntity(dto, service.entity.getClass())), dto.getClass());
     }
+
 }

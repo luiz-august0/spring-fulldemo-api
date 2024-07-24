@@ -7,7 +7,7 @@ import com.springfulldemo.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultipartBeanValidator extends AbstractValidator {
+public class MultipartBeanValidator extends AbstractValidator<MultipartBean> {
     public MultipartBeanValidator() {
         try {
             List<RequiredField> requiredFields = new ArrayList<>();
